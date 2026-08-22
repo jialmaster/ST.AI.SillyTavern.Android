@@ -34,6 +34,17 @@ class AndroidHostBridgeTest {
     }
 
     @Test
+    fun `returns system information snapshot from the host collector callback`() {
+        val bridge = newBridge(
+            isHostActive = { true },
+            recordWebPerformanceDiagnostic = {},
+            systemInfoJson = { "{\"battery\":{\"levelPercent\":87}}" }
+        )
+
+        assertTrue(bridge.getSystemInfo().contains("levelPercent"))
+    }
+
+    @Test
     fun `compacts web performance diagnostic into one bounded log line`() {
         val recordedPayloads = mutableListOf<String>()
         val bridge = newBridge(
@@ -51,7 +62,8 @@ class AndroidHostBridgeTest {
 
     private fun newBridge(
         isHostActive: () -> Boolean,
-        recordWebPerformanceDiagnostic: (String) -> Unit
+        recordWebPerformanceDiagnostic: (String) -> Unit,
+        systemInfoJson: () -> String = { "{}" }
     ): AndroidHostBridge {
         return AndroidHostBridge(
             isHostActive = isHostActive,
@@ -65,6 +77,7 @@ class AndroidHostBridgeTest {
             applySystemBarsBackgroundColors = { _, _ -> },
             reloadTavern = {},
             hostVersionInfoJson = { "{}" },
+            systemInfoJson = systemInfoJson,
             recordWebPerformanceDiagnosticPayload = recordWebPerformanceDiagnostic
         )
     }

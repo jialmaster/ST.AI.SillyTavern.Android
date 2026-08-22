@@ -278,6 +278,7 @@
       const defaultHostVersionInfo = config.defaultHostVersionInfo;
       let hostVersionInfoCache = mergeHostVersionInfo(defaultHostVersionInfo);
       let hostVersionInfoCacheSerialized = JSON.stringify(hostVersionInfoCache);
+      let systemInfoCache = '{}';
       let notificationPermissionState = 'default';
       let requestId = 1;
       const pendingRequests = new Map();
@@ -366,6 +367,18 @@
           .catch(function() {});
       }
 
+      // Gecko native messaging 是异步通道；页面读取时返回最近一次快照，并触发下一次刷新。
+      function refreshSystemInfo() {
+        sendAsync('getSystemInfo', null, 3000)
+          .then(function(value) {
+            if (typeof value === 'string') {
+              systemInfoCache = value;
+              window.dispatchEvent(new CustomEvent('sillydroidSystemInfoChanged', { detail: value }));
+            }
+          })
+          .catch(function() {});
+      }
+
       function applyHostVersionInfoJson(value) {
         if (typeof value !== 'string') {
           return;
@@ -414,6 +427,10 @@
         getHostVersionInfo: function() {
           refreshHostVersionInfo();
           return JSON.stringify(hostVersionInfoCache || defaultHostVersionInfo);
+        },
+        getSystemInfo: function() {
+          refreshSystemInfo();
+          return systemInfoCache;
         },
         recordWebPerformanceDiagnostic: function(payload) {
           return postBoolean('recordWebPerformanceDiagnostic', String(payload || ''));
@@ -1329,6 +1346,7 @@
             geckoPageBridgeInstalled: window.__sillyDroidGeckoPageBridgeInstalled === true,
             hostBridgeAvailable: !!hostBridge,
             hostBridgeVersionInfoAvailable: isFunction(hostBridge, 'getHostVersionInfo'),
+            hostBridgeSystemInfoAvailable: isFunction(hostBridge, 'getSystemInfo'),
             hostBridgePerformanceDiagnosticAvailable: isFunction(hostBridge, 'recordWebPerformanceDiagnostic'),
             hostBridgeSystemBarsAvailable: isFunction(hostBridge, 'setSystemBarsBackgroundColor') || isFunction(hostBridge, 'setSystemBarsBackgroundColors'),
             hostBridgeOpenSettingsAvailable: isFunction(hostBridge, 'openSettings'),

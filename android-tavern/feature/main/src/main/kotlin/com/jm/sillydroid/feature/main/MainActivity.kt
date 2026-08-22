@@ -41,6 +41,7 @@ import com.jm.sillydroid.feature.main.ui.home.HomeViewModel
 import com.jm.sillydroid.feature.main.ui.home.bridge.BrowserHostBridgeActions
 import com.jm.sillydroid.feature.main.ui.home.bridge.BrowserHostBridgeInstaller
 import com.jm.sillydroid.feature.main.ui.home.bridge.BrowserHostBridgeInstallerFactory
+import com.jm.sillydroid.feature.main.ui.home.bridge.AndroidSystemInfoCollector
 import com.jm.sillydroid.feature.main.ui.home.bootstrap.BootstrapOverlayHost
 import com.jm.sillydroid.feature.main.ui.home.floatinglogs.FloatingLogsHost
 import com.jm.sillydroid.feature.main.ui.home.io.HostIoController
@@ -87,6 +88,7 @@ class MainActivity : AppCompatActivity() {
     private val hostLogRepository by lazy { appGraph.hostLogRepository }
     private val processManager by lazy<BootstrapController> { appGraph.bootstrapController }
     private val runtimeConfigRepository by lazy { appGraph.runtimeConfigRepository }
+    private val systemInfoCollector by lazy { AndroidSystemInfoCollector(applicationContext) }
     private val homeViewModel: HomeViewModel by viewModels { HomeViewModel.Factory(processManager) }
 
     private lateinit var hostIo: HostIoController
@@ -748,6 +750,7 @@ class MainActivity : AppCompatActivity() {
             applySystemBarsBackgroundColors = ::applyWebViewSurfaceSystemBars,
             reloadTavern = { browserHost.reloadTavernWebView(source = "android_host_bridge") },
             hostVersionInfoJson = ::buildAndroidHostVersionInfoJson,
+            systemInfoJson = systemInfoCollector::getSnapshotJson,
             recordWebPerformanceDiagnosticPayload = { payload ->
                 recordWebPerformanceDiagnosticPayload(payload)
             },

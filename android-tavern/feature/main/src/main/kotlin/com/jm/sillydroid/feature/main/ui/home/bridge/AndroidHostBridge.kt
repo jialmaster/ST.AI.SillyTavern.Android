@@ -2,6 +2,12 @@ package com.jm.sillydroid.feature.main.ui.home.bridge
 
 import android.webkit.JavascriptInterface
 
+/**
+ * SillyDroid 页面与 Android 宿主之间的只读/动作桥。
+ *
+ * 允许暴露经过宿主校验的页面动作和系统状态快照；不允许在桥内持有 Activity View、
+ * 直接执行页面业务或返回未裁剪的设备敏感标识。
+ */
 class AndroidHostBridge(
     private val isHostActive: () -> Boolean,
     private val runOnUiThread: (() -> Unit) -> Unit,
@@ -15,6 +21,7 @@ class AndroidHostBridge(
     private val applySystemBarsBackgroundColors: (String, String) -> Unit,
     private val reloadTavern: () -> Unit,
     private val hostVersionInfoJson: () -> String,
+    private val systemInfoJson: () -> String = { "{}" },
     private val recordWebPerformanceDiagnosticPayload: (String) -> Unit = {}
 ) {
     private companion object {
@@ -112,6 +119,12 @@ class AndroidHostBridge(
     @JavascriptInterface
     fun getHostVersionInfo(): String {
         return hostVersionInfoJson()
+    }
+
+    /** 返回一次性 JSON 系统状态快照；采集失败字段由宿主采集器标记为不可用。 */
+    @JavascriptInterface
+    fun getSystemInfo(): String {
+        return systemInfoJson()
     }
 
     @JavascriptInterface

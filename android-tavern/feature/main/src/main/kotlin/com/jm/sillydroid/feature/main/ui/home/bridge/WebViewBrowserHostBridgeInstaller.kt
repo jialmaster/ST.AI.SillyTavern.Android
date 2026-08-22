@@ -92,6 +92,7 @@ class WebViewBrowserHostBridgeInstaller(
                 applySystemBarsBackgroundColors = actions.applySystemBarsBackgroundColors,
                 reloadTavern = actions.reloadTavern,
                 hostVersionInfoJson = actions.hostVersionInfoJson,
+                systemInfoJson = actions.systemInfoJson,
                 recordWebPerformanceDiagnosticPayload = actions.recordWebPerformanceDiagnosticPayload
             ),
             androidHostBridgeName

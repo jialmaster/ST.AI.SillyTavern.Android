@@ -62,6 +62,7 @@ class FloatingBrowserUiDelegateRegistry(
             },
             reloadTavern = { currentDelegate()?.reloadTavern?.invoke() },
             hostVersionInfoJson = ::resolveHostVersionInfoJson,
+            systemInfoJson = { currentDelegate()?.systemInfoJson?.invoke() ?: "{}" },
             recordWebPerformanceDiagnosticPayload = { payload ->
                 currentDelegate()?.recordWebPerformanceDiagnosticPayload?.invoke(payload)
             },

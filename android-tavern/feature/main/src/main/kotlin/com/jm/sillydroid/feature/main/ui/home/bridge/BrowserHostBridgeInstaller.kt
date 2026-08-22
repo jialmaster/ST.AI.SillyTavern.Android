@@ -71,6 +71,8 @@ data class BrowserHostBridgeActions(
     val applySystemBarsBackgroundColors: (String, String) -> Unit,
     val reloadTavern: () -> Unit,
     val hostVersionInfoJson: () -> String,
+    /** 返回当前 Android 宿主的只读系统状态快照；不得在此回调中执行 UI 操作或修改系统状态。 */
+    val systemInfoJson: () -> String = { "{}" },
     val recordWebPerformanceDiagnosticPayload: (String) -> Unit = {},
     val requestNotificationPermission: () -> Unit = {},
     val showDownloadFailure: (DownloadFailureReport) -> Unit = {}
